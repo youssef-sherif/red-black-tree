@@ -1,0 +1,17 @@
+cat
+dog
+spider
+fish
+monkey
+crocodile
+ant
+cow
+snake
+chicken
+zebra
+lion
+frog
+mankind
+whale
+dolphin
+elephant

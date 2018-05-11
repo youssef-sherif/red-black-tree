@@ -4,7 +4,8 @@ import static tree.RedBlackTreeUtility.*;
 
 public class RedBlackTree {
 
-	private Node root;
+	private Node root;	
+	private Node toDelete;
 
 	public RedBlackTree() {
 		root = null;
@@ -44,15 +45,8 @@ public class RedBlackTree {
 	public void delete(String word) throws Exception {
 
 		root = delete(root, word);
-
-		System.out.println(String.format("%100s", "").replaceAll(" ", "-"));
-		printAllNodes(root);
-		System.out.println(String.format("\n%100s", "").replaceAll(" ", "-"));
-		printInOrder(root);
-		System.out.println(String.format("\n%100s", "").replaceAll(" ", "-"));
-
-		System.out.println("HEIGHT: " + getHeight(root));
-
+		
+		print(getRoot());
 	}
 
 	public void insert(String word) throws Exception {
@@ -63,24 +57,7 @@ public class RedBlackTree {
 
 		fixInsertViolations(node);
 
-		System.out.println(node.getWord());
-
-		System.out.println(String.format("%100s", "").replaceAll(" ", "-"));
-		printAllNodes(root);
-		System.out.println(String.format("\n%100s", "").replaceAll(" ", "-"));
-		printInOrder(root);
-		System.out.println(String.format("\n%100s", "").replaceAll(" ", "-"));
-
-		System.out.println("HEIGHT: " + getHeight(root));
-	}
-
-	public String minValue(Node root) {
-		String minv = root.getWord();
-		while (root.hasLeftChild()) {
-			minv = root.getLeftChild().getWord();
-			root = root.getLeftChild();
-		}
-		return minv;
+		print(getRoot());
 	}
 
 	public int getHeight() {
@@ -121,44 +98,157 @@ public class RedBlackTree {
 	}
 
 	/*
-	 * Recursive function to delete word from tree.
+	 * Recursive function to search for node to delete and replace it with it's
+	 * predecessor.
 	 */
 	private Node delete(Node root, String word) throws Exception {
 		if (root == null) {
+			/*
+			 * reached end of branch without finding the word
+			 */
 			throw new Exception(" NOT FOUND");
 		}
 
-		int indicator = compare(root.getWord().toLowerCase(), word);
+		int indicator = compare(root.getWord(), word);
 		if (indicator > 0) {
 			Node leftChild = delete(root.getLeftChild(), word);
 			root.setLeftChild(leftChild);
-			if (leftChild != null) {
-				leftChild.setParent(root);
-				fixDeleteViolations(leftChild, root);
-			}
+			fixDeleteViolations(leftChild);
 		} else if (indicator < 0) {
 			Node rightChild = delete(root.getRightChild(), word);
-			rightChild.setBlack();
 			root.setRightChild(rightChild);
-			if (rightChild != null) {
-				rightChild.setParent(root);
-				fixDeleteViolations(rightChild, root);
-			}
+			fixDeleteViolations(rightChild);
 		} else if (indicator == 0) {
-			if (!root.hasLeftChild()) {
-				return root.getRightChild();
-			} else if (!root.hasRightChild()) {
-				return root.getLeftChild();
+			
+			/*
+			 * only one node
+			 */			
+			if(root.getParent() == null && root.getLeftChild() == null && root.getRightChild() == null) {
+				return null;
 			}
-			String nextInOrder = minValue(root.getRightChild());
-			root.setWord(nextInOrder);
-			root.setRightChild(delete(root.getRightChild(), root.getWord()));
-			return root;
-		} else {
-			throw new Exception(" UNKNOWN");
-		}
 
+			/*
+			 * node with no children
+			 */
+			if (root.getLeftChild() == null && root.getRightChild() == null) {
+				if (root.getLeftChild() == null) {
+					Node nullNode = new Node("NULL");
+					nullNode.setBlack();
+					root.setLeftChild(nullNode);							
+					return redBlackDelete(nullNode, root);
+				} else if (root.getRightChild() == null) {
+					Node nullNode = new Node("NULL");
+					nullNode.setBlack();
+					root.setRightChild(nullNode);						
+					return redBlackDelete(nullNode, root);
+				}
+			} 
+			/*
+			 * 	 1 child
+			 */
+			else if(root.getLeftChild() == null ^ root.getRightChild() == null) {
+	            if (root.getLeftChild() == null) {
+	            	System.out.println(root.getWord());
+	                return redBlackDelete(root.getRightChild(), root);
+	            }
+	            else if (root.getRightChild() == null) {	            	
+	            	System.out.println(root.getWord());
+	                return redBlackDelete(root.getLeftChild(), root);
+	            }
+			}
+			/*
+			 * 2 children.
+			 * get the word chronologically before word to be deleted
+			 */
+			System.out.println("2 children");
+			String predecessorWord = maxValue(root.getLeftChild());
+			root.setWord(predecessorWord);
+			Node leftChild = delete(root.getLeftChild(), root.getWord());
+			root.setLeftChild(leftChild);						
+			fixDeleteViolations(leftChild);
+
+		}
 		return root;
+	}
+
+	private Node redBlackDelete(Node toReplace, Node toDelete) throws Exception {
+
+		if (toReplace.getColour() != toDelete.getColour()) {
+			toReplace.setBlack();
+		} else if (toReplace.isBlack() && toDelete.isBlack()) {
+			toReplace.setDoubleBlack(true);
+		}
+		toReplace.setParent(toDelete.getParent());
+		return toReplace;
+	}
+
+	private void fixDeleteViolations(Node node) {
+
+		if (node == null)
+			return;
+		System.out.println("here");
+
+		Node sibling = null;
+		Node parent = null;
+		while (node.isDoubleBlack() && node.getParent() != null) {
+			System.out.println("please");
+			sibling = null;
+			parent = node.getParent();
+			if (parent.getLeftChild() == node) {
+				sibling = parent.getRightChild();
+			} else if (parent.getRightChild() == node) {
+				sibling = parent.getLeftChild();
+			}
+			if (sibling != null) {
+				Node redChild = null;
+				if (sibling.getRightChild() != null && sibling.getRightChild().isRed()) {
+					redChild = sibling.getRightChild();
+				} else if (sibling.getLeftChild() != null && sibling.getLeftChild().isRed()) {
+					redChild = sibling.getLeftChild();
+				} else {		
+					node.setDoubleBlack(false);					
+					sibling.reColour();
+					node = node.getParent();
+				}
+
+				// Left Left
+				if (parent.getLeftChild() == sibling && sibling.getLeftChild() == redChild) {
+					rightRotate(parent);
+					node.setDoubleBlack(false);
+				} 
+				//Left Left
+				else if (parent.getRightChild() == sibling && sibling.getRightChild() == redChild) {
+					leftRotate(parent);
+					redChild.setBlack();
+					node.setDoubleBlack(false);
+				} else if (parent.getLeftChild() == sibling && sibling.getRightChild() == redChild) {
+					leftRotate(sibling);
+					rightRotate(parent);
+					node.setDoubleBlack(false);
+				}
+				//Right Left
+				else if (parent.getRightChild() == sibling && sibling.getLeftChild() == redChild) {
+					rightRotate(sibling);
+					leftRotate(parent);
+					node.setDoubleBlack(false);
+				}
+			}
+			if(node.getParent() == null) {
+				node.setBlack();
+			}
+		}
+		System.out.println("here");
+		System.out.println(node.getWord());
+		if (node.getWord().equals("NULL")) {
+			System.out.println("here2");
+			System.out.println(node.getParent());
+			if (node.getParent() != null && node.getParent().getLeftChild() == node) {
+				node.getParent().setLeftChild(null);
+			} else if (node.getParent() != null && node.getParent().getRightChild() == node) {
+				node.getParent().setRightChild(null);
+			}
+			node = null;
+		}
 	}
 
 	/*
@@ -185,62 +275,10 @@ public class RedBlackTree {
 			}
 		} else if (indicator == 0) {
 			throw new Exception(root.getWord() + " ALREADY EXISTS");
-		} else {
-			throw new Exception(" UNKNOWN");
 		}
 
 		return root;
 	}
-
-	private void fixDeleteViolations(Node u, Node v) {
-		if (u.getColour() != v.getColour()) {
-			u.setBlack();
-		}
-//        else if (u.isBlack() && v.isBlack()) {
-//			u.setDoubleBlack(true);
-//
-//			while (u.isDoubleBlack() && u.getParent() != null) {
-//				Node sibling = null;
-//				if (v.getRightChild() != u) {
-//					sibling = v.getRightChild();
-//				} else {
-//					sibling = v.getLeftChild();
-//				}
-//				if (sibling.isBlack()) {
-//					Node redChild = null;
-//					if (sibling.getLeftChild().isRed()) {
-//						redChild = sibling.getLeftChild();
-//						if (sibling.getRightChild().isRed()) {
-//							redChild = sibling.getRightChild();
-//							// Left Left Case
-//							if (sibling.getParent().getLeftChild() == sibling) {
-//								rightRotate(sibling.getParent());
-//							}
-//							// Right Right Case
-//							else if (sibling.getParent().getRightChild() == sibling) {
-//								leftRotate(sibling.getParent());
-//							}
-//						}
-//					}
-//					// Left Right Case
-//					if (sibling.getParent().getLeftChild() == sibling && sibling.getRightChild() == redChild) {
-//						leftRotate(sibling);
-//						rightRotate(sibling.getParent());
-//					}
-//					// Right Left Case
-//					else if (sibling.getParent().getRightChild() == sibling && sibling.getLeftChild() == redChild) {
-//						rightRotate(sibling);
-//						leftRotate(sibling.getParent());
-//					}
-//
-//					Node blackChild = null;
-//					
-//				}
-//
-//			}
-//		}
-	}
-	
 
 	private void fixInsertViolations(Node node) {
 
@@ -315,6 +353,7 @@ public class RedBlackTree {
 	}
 
 	private void rightRotate(Node node) {
+		System.out.println("rotating right on " + node.getWord());
 		Node left = node.getLeftChild();
 
 		node.setLeftChild(left.getRightChild());
@@ -339,6 +378,7 @@ public class RedBlackTree {
 	}
 
 	private void leftRotate(Node node) {
+		System.out.println("rotating left on " + node.getWord());
 		Node right = node.getRightChild();
 
 		node.setRightChild(right.getLeftChild());

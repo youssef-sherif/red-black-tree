@@ -11,7 +11,6 @@ chicken
 zebra
 lion
 frog
-mankind
 whale
 dolphin
 elephant

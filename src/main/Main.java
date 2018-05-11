@@ -1,5 +1,6 @@
 package main;
 
+import static tree.RedBlackTreeUtility.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -53,6 +54,7 @@ public class Main {
 					tree.insert(word);
 				} catch (Exception e) {
 					System.err.println("ERROR: " + e.getMessage());
+					e.printStackTrace();
 					continue;
 				}
 				System.out.println("OK");
@@ -62,7 +64,8 @@ public class Main {
 				try {
 					tree.delete(word);
 				} catch (Exception e) {
-					System.err.println("ERROR: " + e.getMessage());
+					System.out.println("ERROR: " + e.getMessage());
+					e.printStackTrace();
 					continue;
 				}
 				System.out.println("OK");
@@ -76,7 +79,10 @@ public class Main {
 				else
 					System.out.println("NO");
 
-			} else {
+			} else if(command.equals("print")) {
+				print(tree.getRoot());
+			}
+			else {
 				if (!command.matches("exit"))
 					System.out.println("ERROR: UNKOWN COMMAND");
 			}
@@ -87,21 +93,22 @@ public class Main {
 
 	public static void load(RedBlackTree tree, String filename) throws Exception {
 
-		BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));		
+		BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
 		boolean atleast1 = false;
 		String word = reader.readLine();
 		while (word != null) {
 			System.out.println("...");
-			try {				
+			try {
 				tree.insert(word);
 				atleast1 = true;
 				System.out.println("INSERT " + word + " SUCCESSFUL");
 			} catch (Exception e) {
-				System.out.println(word + " IS DUPLICATE"); 
+				e.printStackTrace();
+				System.out.println(word + " IS DUPLICATE");
 			}
 			word = reader.readLine();
 		}
-		if(!atleast1) {
+		if (!atleast1) {
 			System.out.println("NO CHANGE");
 		}
 	}

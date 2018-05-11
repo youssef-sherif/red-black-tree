@@ -15,14 +15,33 @@ class Node {
 	private Node parent;
 	private Node left;
 	private Node right;
-	
-	
 
 	public Node(String word) {
 		this.word = word;
 		this.colour = false; // color the node red
 	}
 
+
+	public Node(String string, boolean b) {
+		word = string;
+		colour = b;
+	}
+
+
+	public boolean isLeaf() {
+		if(left == null && right == null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean hasOneChild() {
+		if(left == null ^ right == null) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean isBlack() {
 		return colour;
 	}
@@ -38,7 +57,7 @@ class Node {
 	public boolean getColour() {
 		return colour;
 	}
-	
+
 	public void setColour(boolean colour) {
 		this.colour = colour;
 	}
@@ -51,26 +70,10 @@ class Node {
 		this.doubleBlack = doubleBlack;
 	}
 
-	public Node getLeft() {
-		return left;
-	}
-
-	public void setLeft(Node left) {
-		this.left = left;
-	}
-
-	public Node getRight() {
-		return right;
-	}
-
-	public void setRight(Node right) {
-		this.right = right;
-	}
-
 	public String getWord() {
 		return word;
 	}
-	
+
 	public void setWord(String word) {
 		this.word = word;
 	}
@@ -79,33 +82,26 @@ class Node {
 		return right;
 	}
 
-	public void setRightChild(Node right) {		
-		this.right = right;
+	public void setRightChild(Node right)  {
+		this.right = right;		
 	}
-	
+
 	public Node getLeftChild() {
 		return left;
 	}
-	
-	public void setLeftChild(Node left) {
+
+	public void setLeftChild(Node left) {		
 		this.left = left;
 	}
-	
+
 	public Node getParent() {
 		return parent;
 	}
-	
+
 	public void setParent(Node parent) {
 		this.parent = parent;
 	}
-	
-	public boolean hasLeftChild() {
-		return (left != null);
-	}
-	
-	public boolean hasRightChild() {
-		return (right != null);
-	}
+
 
 	public void setBlack() {
 		this.colour = true;

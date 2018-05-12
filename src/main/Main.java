@@ -48,7 +48,7 @@ public class Main {
 					System.err.println(e.getMessage());
 				}
 
-			} else if (command.matches("insert ([a-z]|[A-Z])+")) {
+			} else if (command.matches("insert ([a-z]|[A-Z]|[-])+")) {
 				String word = command.split(" ")[1];
 				try {
 					tree.insert(word);
@@ -58,7 +58,7 @@ public class Main {
 				}
 				System.out.println("OK");
 
-			} else if (command.matches("delete ([a-z]|[A-Z])+")) {
+			} else if (command.matches("delete ([a-z]|[A-Z]|[-])+")) {
 				String word = command.split(" ")[1];
 				try {
 					tree.delete(word);
@@ -70,7 +70,7 @@ public class Main {
 
 			} else if (command.matches("size")) {
 				System.out.println(tree.getSize());
-			} else if (command.matches("exists ([a-z]|[A-Z])+")) {
+			} else if (command.matches("exists ([a-z]|[A-Z]|[-])+")) {
 				String word = command.split(" ")[1];
 				if (tree.Search(word))
 					System.out.println("YES");

@@ -9,37 +9,40 @@ import java.util.Queue;
 public class RedBlackTreeUtility {
 
 	public static boolean bothChildrenRed(Node node) {
-		if(node.getLeftChild() == null || node.getRightChild() == null) {
+		if (node.getLeftChild() == null || node.getRightChild() == null) {
 			return false;
 		}
 		return (node.getLeftChild().isRed() && node.getRightChild().isRed());
 
 	}
-	
+
 	public static boolean hasChildRed(Node node) {
-		if(node.getLeftChild() == null && node.getRightChild() == null) { 
-			return false;			
-		} else if(node.getLeftChild().isBlack() && node.getRightChild().isBlack()) {
+		if ((node.getLeftChild() == null || node.getLeftChild().isBlack()) && (node.getRightChild() == null || node.getRightChild().isBlack())) {
 			return false;
 		}
 		return true;
+		
+//		if((node.getLeftChild() != null && node.getLeftChild().isRed()) ^ (node.getRightChild() != null && node.getRightChild().isRed())) {
+//			return true;			
+//		}
+//		return false;
 	}
-	
+
 	public static boolean bothChildrenBlack(Node node) {
-		if(node.getLeftChild() == null && node.getRightChild() == null) {
+		if (node.getLeftChild() == null && node.getRightChild() == null) {
 			return true;
-		} else  {
-			if(node.getLeftChild().isBlack() && node.getRightChild().isBlack()) {
+		} else {
+			if (node.getLeftChild().isBlack() && node.getRightChild().isBlack()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static Node maxValue(Node root) {
-		Node maxValue = root;
+	public static String maxValue(Node root) {
+		String maxValue = root.getWord();
 		while (root.getRightChild() != null) {
-			maxValue = root.getRightChild();
+			maxValue = root.getRightChild().getWord();
 			root = root.getRightChild();
 		}
 		return maxValue;

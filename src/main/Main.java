@@ -53,8 +53,7 @@ public class Main {
 				try {
 					tree.insert(word);
 				} catch (Exception e) {
-					System.err.println("ERROR: " + e.getMessage());
-					e.printStackTrace();
+					System.err.println("ERROR: " + e.getMessage());				
 					continue;
 				}
 				System.out.println("OK");
@@ -64,8 +63,7 @@ public class Main {
 				try {
 					tree.delete(word);
 				} catch (Exception e) {
-					System.out.println("ERROR: " + e.getMessage());
-					e.printStackTrace();
+					System.err.println("ERROR: " + e.getMessage());					
 					continue;
 				}
 				System.out.println("OK");
@@ -102,8 +100,7 @@ public class Main {
 				tree.insert(word);
 				atleast1 = true;
 				System.out.println("INSERT " + word + " SUCCESSFUL");
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception e) {				
 				System.out.println(word + " IS DUPLICATE");
 			}
 			word = reader.readLine();

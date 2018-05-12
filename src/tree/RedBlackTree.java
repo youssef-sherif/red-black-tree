@@ -263,7 +263,8 @@ public class RedBlackTree {
 					// Recolour
 					parent.reColour();
 					sibling.reColour();
-				}
+					node = node.getParent();
+				}				
 			}
 		}
 

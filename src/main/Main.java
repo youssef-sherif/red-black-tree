@@ -79,6 +79,8 @@ public class Main {
 
 			} else if(command.equals("print")) {
 				print(tree.getRoot());
+			} else if(command.equals("height")) {
+				System.out.println(tree.getHeight());
 			}
 			else {
 				if (!command.matches("exit"))

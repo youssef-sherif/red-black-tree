@@ -5,7 +5,11 @@ import static tree.RedBlackTreeUtility.*;
 public class RedBlackTree {
 
 	private Node root;
-	private Node doubleBlack;	
+	/*
+	 * this is the node that replaces a deleted node. if its double black, there is
+	 * a delete violation
+	 */
+	private Node doubleBlack;
 
 	public RedBlackTree() {
 		root = null;
@@ -48,7 +52,7 @@ public class RedBlackTree {
 
 		fixDeleteViolations(doubleBlack);
 
-		 print(root);
+		printAllNodes(root);
 	}
 
 	public void insert(String word) throws Exception {
@@ -57,9 +61,9 @@ public class RedBlackTree {
 
 		root = insert(root, node);
 
-		fixInsertViolations(node);	
+		fixInsertViolations(node);
 
-		print(root);
+		printAllNodes(root);
 	}
 
 	public int getHeight() {
@@ -111,17 +115,16 @@ public class RedBlackTree {
 			throw new Exception(" NOT FOUND");
 		}
 
-		int indicator = compare(root.getWord(), word);
-		if (indicator > 0 ) {
+		int indicator = compare(root.getWord().toLowerCase(), word.toLowerCase());
+		if (indicator > 0) {
 			Node leftChild = delete(root.getLeftChild(), word);
 			root.setLeftChild(leftChild);
-			leftChild.setParent(root);			
-		} else if (indicator < 0 ) {
+			leftChild.setParent(root);
+		} else if (indicator < 0) {
 			Node rightChild = delete(root.getRightChild(), word);
 			root.setRightChild(rightChild);
 			rightChild.setParent(root);
-		}
-		else if (indicator == 0) {
+		} else if (indicator == 0) {
 
 			/*
 			 * only one node just delete it
@@ -169,7 +172,7 @@ public class RedBlackTree {
 	}
 
 	private Node redBlackDelete(Node toReplace, Node toDelete) throws Exception {
-		
+
 		if (toReplace.getColour() != toDelete.getColour()) {
 			toReplace.setBlack();
 		} else if (toReplace.isBlack() && toDelete.isBlack()) {
@@ -181,7 +184,7 @@ public class RedBlackTree {
 
 	private void fixDeleteViolations(Node node) {
 
-		if(node == null) {
+		if (node == null) {
 			return;
 		}
 		Node sibling = null;
@@ -202,35 +205,30 @@ public class RedBlackTree {
 						redChild = sibling.getRightChild();
 					} else if (sibling.getLeftChild() != null && sibling.getLeftChild().isRed()) {
 						redChild = sibling.getLeftChild();
-					} else {
-						node.setDoubleBlack(false);
-						sibling.reColour();
-						node = node.getParent();
 					}
 					// Left Left
 					if (parent.getLeftChild() == sibling
 							&& (sibling.getLeftChild() == redChild || bothChildrenRed(sibling))) {
-						rightRotate(sibling.getParent());										
-						node.setDoubleBlack(false);
+						rightRotate(parent);
 						redChild.setBlack();
+						node.setDoubleBlack(false);						
 					}
 					// Right Right
 					else if (parent.getRightChild() == sibling
 							&& (sibling.getRightChild() == redChild || bothChildrenRed(sibling))) {
-						leftRotate(sibling.getParent());
-						node.setDoubleBlack(false);
+						leftRotate(parent);
 						redChild.setBlack();
+						node.setDoubleBlack(false);						
 					}
+					
 					// Left Right
 					else if (parent.getLeftChild() == sibling && sibling.getRightChild() == redChild) {
 						leftRotate(sibling);
-						redChild.reColour();
 						sibling.reColour();
 					}
 					// Right Left
-					else if (parent.getRightChild() == sibling && sibling.getLeftChild() == redChild) {					
-						rightRotate(sibling);
-						redChild.reColour();
+					else if (parent.getRightChild() == sibling && sibling.getLeftChild() == redChild) {
+						rightRotate(sibling);						
 						sibling.reColour();
 					}
 
@@ -249,14 +247,15 @@ public class RedBlackTree {
 					}
 					if (parent.isDoubleBlack()) {
 						node = node.getParent();
+						continue;
 					}
 				} else if (sibling.isRed()) {
 					System.out.println("case 3");
-					// Left Left
+					// Left
 					if (parent.getLeftChild() == sibling) {
 						rightRotate(sibling.getParent());
 					}
-					// Right Right
+					// Right
 					else if (parent.getRightChild() == sibling) {
 						leftRotate(sibling.getParent());
 					}
@@ -264,7 +263,8 @@ public class RedBlackTree {
 					parent.reColour();
 					sibling.reColour();
 					node = node.getParent();
-				}				
+					continue;
+				}
 			}
 		}
 
@@ -281,7 +281,7 @@ public class RedBlackTree {
 				doubleBlack = null;
 			}
 		}
-		
+
 		getRoot().setBlack();
 
 	}
@@ -325,7 +325,7 @@ public class RedBlackTree {
 			parent = node.getParent();
 			grandParent = node.getParent().getParent();
 
-			if (parent == grandParent.getLeftChild()) {
+			if (parent == grandParent.getLeftChild()) { 
 
 				Node uncle = grandParent.getRightChild();
 

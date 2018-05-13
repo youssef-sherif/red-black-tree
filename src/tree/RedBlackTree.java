@@ -52,7 +52,7 @@ public class RedBlackTree {
 
 		fixDeleteViolations(doubleBlack);
 
-		printAllNodes(root);
+//		print(root);
 	}
 
 	public void insert(String word) throws Exception {
@@ -63,7 +63,7 @@ public class RedBlackTree {
 
 		fixInsertViolations(node);
 
-		printAllNodes(root);
+		print(root);
 	}
 
 	public int getHeight() {
@@ -153,10 +153,12 @@ public class RedBlackTree {
 			 */
 			else if (root.getLeftChild() == null || root.getRightChild() == null) {
 				if (root.getLeftChild() == null) {
-					return redBlackDelete(root.getRightChild(), root);
+					doubleBlack = redBlackDelete(root.getRightChild(), root);
 				} else if (root.getRightChild() == null) {
-					return redBlackDelete(root.getLeftChild(), root);
+					doubleBlack = redBlackDelete(root.getLeftChild(), root);
 				}
+				System.out.println(doubleBlack.getWord());
+				return doubleBlack;
 			}
 			/*
 			 * node to delete has 2 children. get the word chronologically before word to be
@@ -178,7 +180,7 @@ public class RedBlackTree {
 		} else if (toReplace.isBlack() && toDelete.isBlack()) {
 			toReplace.setDoubleBlack(true);
 		}
-		toReplace.setParent(toDelete.getParent());
+		toReplace.setParent(toDelete.getParent());		
 		return toReplace;
 	}
 
@@ -210,25 +212,27 @@ public class RedBlackTree {
 					if (parent.getLeftChild() == sibling
 							&& (sibling.getLeftChild() == redChild || bothChildrenRed(sibling))) {
 						rightRotate(parent);
-						redChild.setBlack();
+						redChild.reColour();						
 						node.setDoubleBlack(false);						
 					}
 					// Right Right
 					else if (parent.getRightChild() == sibling
 							&& (sibling.getRightChild() == redChild || bothChildrenRed(sibling))) {
 						leftRotate(parent);
-						redChild.setBlack();
+						redChild.reColour();						
 						node.setDoubleBlack(false);						
 					}
 					
 					// Left Right
 					else if (parent.getLeftChild() == sibling && sibling.getRightChild() == redChild) {
 						leftRotate(sibling);
+						redChild.reColour();
 						sibling.reColour();
 					}
 					// Right Left
 					else if (parent.getRightChild() == sibling && sibling.getLeftChild() == redChild) {
-						rightRotate(sibling);						
+						rightRotate(sibling);
+						redChild.reColour();
 						sibling.reColour();
 					}
 
@@ -253,19 +257,25 @@ public class RedBlackTree {
 					System.out.println("case 3");
 					// Left
 					if (parent.getLeftChild() == sibling) {
-						rightRotate(sibling.getParent());
+						rightRotate(parent);
+						sibling.reColour();	
+						parent.reColour();
 					}
 					// Right
 					else if (parent.getRightChild() == sibling) {
-						leftRotate(sibling.getParent());
-					}
-					// Recolour
-					parent.reColour();
-					sibling.reColour();
+						leftRotate(parent);
+						sibling.reColour();
+						parent.reColour();
+						
+					}									
+					System.out.println(node.getWord());
+					node.setDoubleBlack(false);
+					System.out.println(node.getParent().getWord());
 					node = node.getParent();
-					continue;
+//					System.out.println(node.isDoubleBlack());
 				}
-			}
+
+			} 
 		}
 
 		/*
